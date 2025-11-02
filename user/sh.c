@@ -53,6 +53,10 @@ int fork1(void);  // Fork but panics on failure.
 void panic(char*);
 struct cmd *parsecmd(char*);
 
+// DOC : Looks like the main 'run' loop of the shell.
+// There are 5 types of commands. The first step is to figure out what
+// kind of command we got and than process it.
+
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
@@ -65,7 +69,9 @@ runcmd(struct cmd *cmd)
   struct redircmd *rcmd;
 
   if(cmd == 0)
+  {
     exit(1);
+  }
 
   switch(cmd->type){
   default:
@@ -130,6 +136,8 @@ runcmd(struct cmd *cmd)
   exit(0);
 }
 
+// DOC : Recieves command from user. This is what is run when user 
+// types shit in terminal.
 int
 getcmd(char *buf, int nbuf)
 {

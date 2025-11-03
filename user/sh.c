@@ -85,6 +85,7 @@ runcmd(struct cmd *cmd)
     fprintf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
 
+  // doc : redirection command. close(rcmd->fd) ensures what?
   case REDIR:
     rcmd = (struct redircmd*)cmd;
     close(rcmd->fd);
@@ -103,6 +104,7 @@ runcmd(struct cmd *cmd)
     runcmd(lcmd->right);
     break;
 
+  // doc : this is how pipe(|) is implemented 
   case PIPE:
     pcmd = (struct pipecmd*)cmd;
     if(pipe(p) < 0)
@@ -163,8 +165,13 @@ main(void)
     }
   }
 
+  // DOC : Main loop that recieved commands and executes them. It uses
+  // process model.
+
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
+    // DOC : Checks if cd command was invoked. For some reason, 
+    // 'cd' is treated differently. It's diretctly invoked by the parent. Not sure why
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Chdir must be called by the parent, not the child.
       buf[strlen(buf)-1] = 0;  // chop \n
@@ -172,8 +179,11 @@ main(void)
         fprintf(2, "cannot cd %s\n", buf+3);
       continue;
     }
+    // doc : if returned pid == 0, than it's a child process
     if(fork1() == 0)
       runcmd(parsecmd(buf));
+
+    // doc : parent calls wait while child executes current command 
     wait(0);
   }
   exit(0);
@@ -332,12 +342,15 @@ struct cmd *parsepipe(char**, char*);
 struct cmd *parseexec(char**, char*);
 struct cmd *nulterminate(struct cmd*);
 
+// DOC : parsecmd gets raw string buff from the user and returns
+// parsed and constructed cmd that the shell is able running
 struct cmd*
 parsecmd(char *s)
 {
   char *es;
   struct cmd *cmd;
 
+  // doc : es points to the end of the string
   es = s + strlen(s);
   cmd = parseline(&s, es);
   peek(&s, es, "");
@@ -349,11 +362,15 @@ parsecmd(char *s)
   return cmd;
 }
 
+// DOC : parseline takes two pointers, 'ps' pointing to the start
+// of the string and 'es' pointing to the end of the string. Or, 'ps'
+// pointing to the first character and 'es' pointing to the last one
 struct cmd*
 parseline(char **ps, char *es)
 {
   struct cmd *cmd;
 
+  // doc : probably checks if the command cointains '|'
   cmd = parsepipe(ps, es);
   while(peek(ps, es, "&")){
     gettoken(ps, es, 0, 0);
@@ -366,6 +383,8 @@ parseline(char **ps, char *es)
   return cmd;
 }
 
+// DOC : Takes the same two pointers passed from parsecmd->parseline->parsepipe
+// and ...
 struct cmd*
 parsepipe(char **ps, char *es)
 {

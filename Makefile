@@ -199,6 +199,9 @@ UPROGS=\
 	$U/_exec\
 	$U/_forkexec\
 	$U/_redirect\
+	$U/_list\
+	$U/_pipe\
+	$U/_pipe2\
 
 
 ifeq ($(LAB),$(filter $(LAB), pgtbl lock))

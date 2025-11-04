@@ -203,6 +203,7 @@ UPROGS=\
 	$U/_pipe\
 	$U/_pipe2\
 	$U/_sleep\
+	$U/_pingpong\
 
 
 ifeq ($(LAB),$(filter $(LAB), pgtbl lock))

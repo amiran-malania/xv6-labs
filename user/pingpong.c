@@ -22,7 +22,7 @@ main()
     {
         // inside child
         read(fds[1], (void *)buf, sizeof(buf));
-        printf("<%d>: recieved ping\n", pid);
+        printf("%d: received ping\n", pid);
         buf = 't';
         write(fds[1], (void *)buf, sizeof(buf));
         exit(0);
@@ -33,7 +33,7 @@ main()
         wait((int*) 0);
         write(fds[0], (void *)buf, sizeof(buf));
         read(fds[0], (void *)buf, sizeof(buf));
-        printf("<%d>: recieved pong\n", pid);
+        printf("%d: received pong\n", pid);
         exit(0);
     }
 

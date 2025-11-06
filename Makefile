@@ -204,6 +204,7 @@ UPROGS=\
 	$U/_pipe2\
 	$U/_sleep\
 	$U/_pingpong\
+	$U/_find\
 
 
 ifeq ($(LAB),$(filter $(LAB), pgtbl lock))

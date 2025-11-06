@@ -10,6 +10,25 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 
+char*
+fmtname(char *path)
+{
+  static char buf[DIRSIZ+1];
+  char *p;
+
+  // Find first character after last slash.
+  for(p=path+strlen(path); p >= path && *p != '/'; p--)
+    ;
+  p++;
+
+  // Return blank-padded name.
+  if(strlen(p) >= DIRSIZ)
+    return p;
+  memmove(buf, p, strlen(p));
+  memset(buf+strlen(p), ' ', DIRSIZ-strlen(p));
+  return buf;
+}
+
 // doc : ok wait, what's the plan here?
 // open direcotry, get all file names and compare to passed arg?
 void
@@ -32,6 +51,19 @@ find(char *path, char *filename)
         return;
     }
 
+    while (read(fd, &de, sizeof(de)) == sizeof(de))
+    {
+        if (de.inum == 0)
+        {
+            continue;
+        }          
+
+       if (strcmp(de.name, filename) == 0)
+       {
+            // doc : we got a match
+            printf("%s\n", fmtname(filename));
+       } 
+    }
 }
 
 int
@@ -39,7 +71,7 @@ main(int argc, char* argv[])
 {
     if (argc < 3)
     {
-        printf("Usage: find filepath(e.g find . a)");
+        printf("Usage: find filepath(e.g find . a)\n");
         exit(1);
     }
 

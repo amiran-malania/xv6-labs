@@ -31,7 +31,7 @@ ls(char *path)
   struct dirent de;
   struct stat st; // doc : used to extract meta info about a file
 
-  // doc : first, try to open the file
+  // doc : first, try to open the file/dir
   if((fd = open(path, 0)) < 0){
     fprintf(2, "ls: cannot open %s\n", path);
     return;
@@ -59,6 +59,9 @@ ls(char *path)
     strcpy(buf, path);    // doc : make scope copy of path into buf
     p = buf+strlen(buf);  // doc : initialize p to point to the END of buf
     *p++ = '/';           // doc : end buf with '/'
+    // doc : this is not just about meta info.
+    // while loop iteratively reads all the entries of given dir from fd and
+    // processes it.
     while(read(fd, &de, sizeof(de)) == sizeof(de)){ // doc : get meta info on direcotry
       if(de.inum == 0)
         continue;

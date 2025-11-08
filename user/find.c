@@ -30,7 +30,9 @@ fmtname(char *path)
 }
 
 // doc : ok wait, what's the plan here?
-// open direcotry, get all file names and compare to passed arg?
+// open directory, get all file names and compare to passed arg?
+// open directory -> find out what type of files are in there -> if file, compare ->
+// if dir -> invoke find recursively.
 void
 find(char *path, char *filename)
 {
@@ -40,29 +42,16 @@ find(char *path, char *filename)
     int fd = open(path, 0);
     if (fd < 0)
     {
-        fprintf(2, "find: cannot open file %s\n", path);
+        fprintf(2, "find: cannot open directory %s\n", path);
         return;
     }
 
-    if (fstat(fd, &st) < 0)
+    // doc : than, get meta info on that file 
+    if(fstat(fd, &st) < 0)
     {
         fprintf(2, "find: cannot stat %s\n", path);
         close(fd);
         return;
-    }
-
-    while (read(fd, &de, sizeof(de)) == sizeof(de))
-    {
-        if (de.inum == 0)
-        {
-            continue;
-        }          
-
-       if (strcmp(de.name, filename) == 0)
-       {
-            // doc : we got a match
-            printf("%s\n", fmtname(filename));
-       } 
     }
 }
 
